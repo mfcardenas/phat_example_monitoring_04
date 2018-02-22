@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package phat;
-import java.util.logging.Logger;
-
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
@@ -27,13 +25,11 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-
-import com.jme3.scene.Node;
-import phat.agents.actors.parkinson.HandTremblingControl;
 import phat.app.PHATApplication;
 import phat.app.PHATInitAppListener;
 import phat.body.BodiesAppState;
 import phat.body.commands.*;
+import phat.commands.GotoPath;
 import phat.commands.MovArmCommand;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
@@ -47,8 +43,8 @@ import phat.server.ServerAppState;
 import phat.server.commands.ActivateAccelerometerServerCommand;
 import phat.structures.houses.HouseFactory;
 import phat.structures.houses.commands.CreateHouseCommand;
-import phat.world.WorldAppState;
-import phat.commands.GotoPath;
+
+import java.util.logging.Logger;
 
 /**
  * Class example Test rum simulatios.
