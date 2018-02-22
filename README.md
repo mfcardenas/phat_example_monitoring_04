@@ -3,7 +3,6 @@ Monitoring by acceleration sensor to a user in their home trying to close the re
 <table>
 <tr>
     <td>
-        <img height="80" width="80" src="https://github.com/mfcardenas/phat_examples/blob/master/img/warning.png" title="Warning"/>
         <img height="80" width="80" src="https://github.com/mfcardenas/phat_examples/blob/master/img/in_progress.png" title="The example is under construction"/>
     </td>
     <td>  
