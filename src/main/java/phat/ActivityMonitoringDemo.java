@@ -25,6 +25,7 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.system.AppSettings;
 import phat.app.PHATApplication;
 import phat.app.PHATInitAppListener;
 import phat.body.BodiesAppState;
@@ -47,32 +48,8 @@ import phat.structures.houses.commands.CreateHouseCommand;
 import java.util.logging.Logger;
 
 /**
- * Class example Test rum simulatios.
- * <br/>
- * Interval Execute Classificator<br/>
- * float timeToChange = 10f;<br/>
- * ...<br/>
- * if (cont > timeToChange && cont < timeToChange + 1 && !fall) {<br/>
- * ...<br/>
- * if (fall && cont > timeToChange + 10) {<br/>
- * <br/>
- * Interval Execute Capture Data<br/>
- * float timeToChange = 2f;<br/>
- * ...<br/>
- * if (cont > timeToChange && cont < timeToChange + 1 && !fall) {<br/>
- * ...<br/>
- * if (fall && cont > timeToChange + 2) {<br/>
- * <br/>
- * Optimal min distance between animation<br/>
- * 0.1 * 0.1 * 0.2 <br/>
- * <br/>
- * <b>Gesture</b>
- * SpinSpindle: 	abrir puerta con dificultad<br/>
- * Hands2Hips: 		llevar manos a la cadera, (dolor de espalda)<br/>
- * Hand2Belly: 		llevar la mano al vientre, (dolor de vientre)<br/>
- * Wave: 			pedir ayuda o llamar atención<br/>
- * ScratchArm: 		rascar el codo<br/>
- * LeverPole: 		molestias en el movimiento y pedir ayuda   <br/>
+ * Activity Monitoring Demo.
+ *
  * @author UCM
  */
 public class ActivityMonitoringDemo implements PHATInitAppListener {
@@ -260,7 +237,11 @@ public class ActivityMonitoringDemo implements PHATInitAppListener {
         phat.setDisplayFps(false);
         phat.setDisplayStatView(false);
         phat.setShowSettings(false);
-
+        AppSettings settings = new AppSettings(true);
+        settings.setTitle("Activity Monitoring Demo");
+        settings.setWidth(640);
+        settings.setHeight(580);
+        phat.setSettings(settings);
         phat.start();
     }
 }
