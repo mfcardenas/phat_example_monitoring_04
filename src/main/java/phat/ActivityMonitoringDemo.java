@@ -182,8 +182,6 @@ public class ActivityMonitoringDemo implements PHATInitAppListener {
                     chart1.showWindow();
                     init = true;
 
-                    // Grafica del Sensor...
-
                 }
 
                 cont += f;
@@ -206,7 +204,6 @@ public class ActivityMonitoringDemo implements PHATInitAppListener {
         bodiesAppState.runCommand(new TremblingHandCommand("Patient2", true, false));
 
         bodiesAppState.runCommand(new MovArmCommand("Patient1", true, MovArmCommand.LEFT_ARM));
-
         bodiesAppState.runCommand(new MovArmCommand("Patient2", true, MovArmCommand.LEFT_ARM));
 
         goCloseToObject("Patient1", "Fridge1");
