@@ -83,6 +83,8 @@ public class ActivityMonitoringDemo implements PHATInitAppListener {
 
     private static final Logger logger = Logger.getLogger(ActivityMonitoringDemo.class.getName());
     BodiesAppState bodiesAppState;
+    DevicesAppState devicesAppState;
+    ServerAppState serverAppState;
 
     @Override
     public void init(SimpleApplication app) {
@@ -120,6 +122,89 @@ public class ActivityMonitoringDemo implements PHATInitAppListener {
 
         bodiesAppState.setInSpace("Patient2", "House2", "LivingRoom");
 
+        devicesAppState = new DevicesAppState();
+        stateManager.attach(devicesAppState);
+
+        // Positions of sensor Acelerometers
+        devicesAppState.runCommand(new CreateAccelerometerSensorCommand("sensor1"));
+        devicesAppState.runCommand(new SetDeviceOnPartOfBodyCommand("Patient2", "sensor1",
+                SetDeviceOnPartOfBodyCommand.PartOfBody.LeftHand));
+
+        devicesAppState.runCommand(new CreateAccelerometerSensorCommand("sensor2"));
+        devicesAppState.runCommand(new SetDeviceOnPartOfBodyCommand("Patient2", "sensor2",
+                SetDeviceOnPartOfBodyCommand.PartOfBody.RightHand));
+
+        devicesAppState.runCommand(new CreateAccelerometerSensorCommand("sensor3"));
+        devicesAppState.runCommand(new CreateAccelerometerSensorCommand("sensor4"));
+
+        serverAppState = new ServerAppState();
+        stateManager.attach(serverAppState);
+
+        // Activate Acelerometers
+        serverAppState.runCommand(new ActivateAccelerometerServerCommand("PatientBodyAccel", "sensor1"));
+        serverAppState.runCommand(new ActivateAccelerometerServerCommand("PatientBodyAccel", "sensor2"));
+
+        stateManager.attach(new AbstractAppState() {
+            PHATApplication app;
+
+            @Override
+            public void initialize(AppStateManager asm, Application aplctn) {
+                app = (PHATApplication) aplctn;
+
+            }
+
+            float cont = 0f;
+            boolean fall = false;
+            float timeToChange = 10f;
+            boolean init = false;
+            boolean traindata = false;
+
+            @Override
+            public void update(float f) {
+                if (!init && !traindata) {
+                    // Grafica del Sensor2
+                    AccelerometerControl ac2 = devicesAppState.getDevice("sensor2")
+                            .getControl(AccelerometerControl.class);
+                    ac2.setMode(AccelerometerControl.AMode.GRAVITY_MODE);
+                    XYAccelerationsChart chart2 = new XYAccelerationsChart("Data Accelerations Right Hand", "Local Sensor PHAT-SIM Rigth Hand", "m/s2",
+                            "x,y,z");
+                    ac2.add(chart2);
+                    chart2.showWindow();
+                    init = true;
+
+                    // Grafica del Sensor1
+                    AccelerometerControl ac1 = devicesAppState.getDevice("sensor1")
+                            .getControl(AccelerometerControl.class);
+                    ac1.setMode(AccelerometerControl.AMode.GRAVITY_MODE);
+                    XYAccelerationsChart chart1 = new XYAccelerationsChart("Data Accelerations Left Hand", "Local Sensor PHAT-SIM Left Hand", "m/s2",
+                            "x,y,z");
+                    ac1.add(chart1);
+                    chart1.showWindow();
+                    init = true;
+
+                    // Grafica del Sensor...
+
+                }
+
+                cont += f;
+                if (cont > timeToChange && cont < timeToChange + 1f && !fall) {
+                    System.out.println("Change to DrinkStanding:::" + String.valueOf(cont) + "-" + String.valueOf(f));
+                    bodiesAppState.runCommand(new PlayBodyAnimationCommand("Patient", "DrinkStanding"));
+                    fall = true;
+                } else {
+                    if (fall && cont > timeToChange + 10f) {
+                        System.out.println("Change to WaveAttention:::" + String.valueOf(cont) + "-" + String.valueOf(f));
+                        bodiesAppState.runCommand(new PlayBodyAnimationCommand("Patient", "WaveAttention"));
+                        fall = false;
+                        cont = 0;
+                    }
+                }
+            }
+        });
+
+        bodiesAppState.runCommand(new TremblingHandCommand("Patient2", true, true));
+        bodiesAppState.runCommand(new TremblingHandCommand("Patient2", true, false));
+
         bodiesAppState.runCommand(new MovArmCommand("Patient1", true, MovArmCommand.LEFT_ARM));
 
         bodiesAppState.runCommand(new MovArmCommand("Patient2", true, MovArmCommand.LEFT_ARM));
@@ -132,9 +217,8 @@ public class ActivityMonitoringDemo implements PHATInitAppListener {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        //bodiesAppState.runCommand(new MovArmCommand("Patient1", true, MovArmCommand.RIGHT_ARM));
+
         bodiesAppState.runCommand(gotopathCommand);
-        //app.getCamera().setLocation(new Vector3f(9.692924f, 11.128746f, 4.5429335f));
         app.getCamera().setLocation(new Vector3f(7f, 7.25f, 3.1f));
         app.getCamera().setRotation(new Quaternion(0.44760564f, -0.5397514f, 0.4186186f, 0.5771274f));
 
@@ -155,26 +239,6 @@ public class ActivityMonitoringDemo implements PHATInitAppListener {
                     bodiesAppState.runCommand(new AlignWithCommand(idPersont, door));
                     bodiesAppState.runCommand(new CloseObjectCommand(idPersont, door));
                     bodiesAppState.runCommand(new MovArmCommand(idPersont,true, MovArmCommand.LEFT_ARM));
-//                    goToCrazy("Persont1", "Sink");
-                }
-            }
-        });
-        gtc.setMinDistance(0.1f);
-        bodiesAppState.runCommand(gtc);
-    }
-
-    private void goToCrazy(final String source, final String target){
-        logger.info("--> GoCrazy from source: " + source + " to " + target);
-        GoCloseToObjectCommand gtc = new GoCloseToObjectCommand(source, target, new PHATCommandListener() {
-
-            @Override
-            public void commandStateChanged(PHATCommand command) {
-                if (command.getState() == PHATCommand.State.Running) {
-                    Node body = bodiesAppState.getBodiesNode();
-                    HandTremblingControl htcR = new HandTremblingControl(HandTremblingControl.Hand.RIGHT_HAND);
-                    body.addControl(htcR);
-                    HandTremblingControl htcL = new HandTremblingControl(HandTremblingControl.Hand.LEFT_HAND);
-                    body.addControl(htcL);
                 }
             }
         });
