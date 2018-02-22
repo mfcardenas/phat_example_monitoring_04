@@ -1,5 +1,8 @@
 # PHAT Example Monitoring Activity [04]
-Monitoring by acceleration sensor to a user in their home trying to close the refrigerator door while suffering tremors in hands and neck.
+<b>A user</b> with tremor in both hands <b>and his caregiver.</b>
+
+The caregiver closes the refrigerator door while the patient walks through the house while suffering from an episode of tremors in both hands.
+The user is being monitored with sensors in both hands.
 <table>
 <tr>
     <td>
