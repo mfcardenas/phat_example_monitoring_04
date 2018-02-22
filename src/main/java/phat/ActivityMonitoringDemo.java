@@ -28,6 +28,8 @@ import com.jme3.bullet.BulletAppState;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 
+import com.jme3.scene.Node;
+import phat.agents.actors.parkinson.HandTremblingControl;
 import phat.app.PHATApplication;
 import phat.app.PHATInitAppListener;
 import phat.body.BodiesAppState;
@@ -46,6 +48,7 @@ import phat.server.commands.ActivateAccelerometerServerCommand;
 import phat.structures.houses.HouseFactory;
 import phat.structures.houses.commands.CreateHouseCommand;
 import phat.world.WorldAppState;
+import phat.commands.GotoPath;
 
 /**
  * Class example Test rum simulatios.
@@ -76,9 +79,9 @@ import phat.world.WorldAppState;
  * LeverPole: 		molestias en el movimiento y pedir ayuda   <br/>
  * @author UCM
  */
-public class ActvityMonitoringDemo implements PHATInitAppListener {
+public class ActivityMonitoringDemo implements PHATInitAppListener {
 
-    private static final Logger logger = Logger.getLogger(ActvityMonitoringDemo.class.getName());
+    private static final Logger logger = Logger.getLogger(ActivityMonitoringDemo.class.getName());
     BodiesAppState bodiesAppState;
 
     @Override
@@ -107,6 +110,11 @@ public class ActvityMonitoringDemo implements PHATInitAppListener {
         //Se crean los personajes
         bodiesAppState.createBody(BodiesAppState.BodyType.Young, "Patient2");
 
+        final GotoPath gotopathCommand = new GotoPath(
+                bodiesAppState, "Patient2", new Vector3f[] { new Vector3f(2.0f, 0f, 2f),
+                new Vector3f(4f, 0, 4f), new Vector3f(4f, 0.0f, 2f), new Vector3f(2, 0, 2) },
+                true);
+
         //Se posicionan en la casa
         bodiesAppState.setInSpace("Patient1", "House2", "LivingRoom");
 
@@ -116,12 +124,16 @@ public class ActvityMonitoringDemo implements PHATInitAppListener {
 
         bodiesAppState.runCommand(new MovArmCommand("Patient2", true, MovArmCommand.LEFT_ARM));
 
-        goCloseToObject("Patient2", "Fridge1");
+        goCloseToObject("Patient1", "Fridge1");
 
-
-
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         //bodiesAppState.runCommand(new MovArmCommand("Patient1", true, MovArmCommand.RIGHT_ARM));
-
+        bodiesAppState.runCommand(gotopathCommand);
         //app.getCamera().setLocation(new Vector3f(9.692924f, 11.128746f, 4.5429335f));
         app.getCamera().setLocation(new Vector3f(7f, 7.25f, 3.1f));
         app.getCamera().setRotation(new Quaternion(0.44760564f, -0.5397514f, 0.4186186f, 0.5771274f));
@@ -143,6 +155,26 @@ public class ActvityMonitoringDemo implements PHATInitAppListener {
                     bodiesAppState.runCommand(new AlignWithCommand(idPersont, door));
                     bodiesAppState.runCommand(new CloseObjectCommand(idPersont, door));
                     bodiesAppState.runCommand(new MovArmCommand(idPersont,true, MovArmCommand.LEFT_ARM));
+//                    goToCrazy("Persont1", "Sink");
+                }
+            }
+        });
+        gtc.setMinDistance(0.1f);
+        bodiesAppState.runCommand(gtc);
+    }
+
+    private void goToCrazy(final String source, final String target){
+        logger.info("--> GoCrazy from source: " + source + " to " + target);
+        GoCloseToObjectCommand gtc = new GoCloseToObjectCommand(source, target, new PHATCommandListener() {
+
+            @Override
+            public void commandStateChanged(PHATCommand command) {
+                if (command.getState() == PHATCommand.State.Running) {
+                    Node body = bodiesAppState.getBodiesNode();
+                    HandTremblingControl htcR = new HandTremblingControl(HandTremblingControl.Hand.RIGHT_HAND);
+                    body.addControl(htcR);
+                    HandTremblingControl htcL = new HandTremblingControl(HandTremblingControl.Hand.LEFT_HAND);
+                    body.addControl(htcL);
                 }
             }
         });
@@ -165,7 +197,7 @@ public class ActvityMonitoringDemo implements PHATInitAppListener {
      * @param args
      */
     public static void main(String[] args) {
-        ActvityMonitoringDemo app = new ActvityMonitoringDemo();
+        ActivityMonitoringDemo app = new ActivityMonitoringDemo();
 
         PHATApplication phat = new PHATApplication(app);
         phat.setDisplayFps(false);
