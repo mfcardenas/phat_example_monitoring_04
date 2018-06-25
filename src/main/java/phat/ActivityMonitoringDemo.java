@@ -44,6 +44,7 @@ import phat.server.ServerAppState;
 import phat.server.commands.ActivateAccelerometerServerCommand;
 import phat.structures.houses.HouseFactory;
 import phat.structures.houses.commands.CreateHouseCommand;
+import phat.world.WorldAppState;
 
 import java.util.logging.Logger;
 
@@ -73,6 +74,9 @@ public class ActivityMonitoringDemo implements PHATInitAppListener {
         SpatialEnvironmentAPI seAPI = SpatialEnvironmentAPI.createSpatialEnvironmentAPI(app);
 
         seAPI.getWorldAppState().setCalendar(2016, 2 ,18, 12, 30, 0);
+
+        seAPI.getWorldAppState().setLandType(WorldAppState.LandType.Basic);
+
         seAPI.getHouseAppState().runCommand(new CreateHouseCommand("House2", HouseFactory.HouseType.BrickHouse60m));
 
         bodiesAppState = new BodiesAppState();
@@ -89,6 +93,8 @@ public class ActivityMonitoringDemo implements PHATInitAppListener {
                 bodiesAppState, "Patient2", new Vector3f[] { new Vector3f(2.0f, 0f, 2f),
                 new Vector3f(4f, 0, 4f), new Vector3f(4f, 0.0f, 2f), new Vector3f(2, 0, 2) },
                 true);
+
+//        (8.1337805, 1.4426634, 7.089235)
 
         //Se posicionan en la casa
         bodiesAppState.setInSpace("Patient1", "House2", "LivingRoom");
